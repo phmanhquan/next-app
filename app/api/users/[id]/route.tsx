@@ -23,3 +23,15 @@ export async function PUT(
 
   return NextResponse.json({ id: 1, name: body.name });
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: number } }
+) {
+  const body = await request.json();
+
+  if (params.id > 10)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  return NextResponse.json({});
+}
