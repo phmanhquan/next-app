@@ -18,7 +18,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
   const body = await request.json();
 
@@ -27,13 +27,46 @@ export async function PUT(
   if (!validation.success)
     return NextResponse.json({ error: validation.error }, { status: 400 });
 
-  if (!body.name)
-    return NextResponse.json({ error: "name is required" }, { status: 400 });
+  const mailIsExist = await prisma.user.findFirst({
+    where: {
+      AND: [
+        {
+          email: body.email,
+        },
+        {
+          NOT: {
+            id: parseInt(params.id),
+          },
+        },
+      ],
+    },
+    select: { email: true },
+  });
 
-  if (params.id > 10)
+  if (mailIsExist)
+    return NextResponse.json(
+      { error: "Email is exist" },
+      {
+        status: 400,
+      }
+    );
+
+  const user = await prisma.user.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+
+  if (!user)
     return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  return NextResponse.json({ id: 1, name: body.name });
+  const newUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      name: body.name,
+      email: body.email,
+    },
+  });
+
+  return NextResponse.json(newUser);
 }
 
 export async function DELETE(
