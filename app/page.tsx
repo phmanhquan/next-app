@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ProductCard from "./components/ProductCard/ProductCard";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/authOptions";
 import macos from "@/public/images/macos.jpg";
 import Image from "next/image";
 import { Metadata } from "next";
@@ -34,7 +34,7 @@ export default async function Home() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const product = await fetch("");
+  // const product = await fetch("");
 
   return {
     title: "product.title",
